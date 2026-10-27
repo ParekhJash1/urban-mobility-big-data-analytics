@@ -50,6 +50,7 @@ def main() -> None:
         "rmse": 4.82,
         "mae": 2.71,
         "r2": 0.76,
+        "intercept": 2.35,
         "predictions": [
             {"actual_fare": 18.50, "predicted_fare": 17.92, "distance": 3.20, "duration": 16.4},
             {"actual_fare": 42.00, "predicted_fare": 39.88, "distance": 12.10, "duration": 38.2},

@@ -465,6 +465,7 @@ def build_presentation():
         "FastAPI exposes the results through a clean REST interface.",
         "The dashboard makes demand, revenue, zones, routes, and live events easy to explain.",
         "Spark ML provides a fare prediction model with RMSE, MAE, and R² metrics.",
+        "A live “Try a trip” form returns an estimated fare from the trained model.",
     ], 1.15, 2.55, 10.7, 1.75, 16, WHITE, 0.42)
     text(slide, "Thank you", 0.75, 5.42, 4.0, 0.55, 34, MINT, True, "Aptos Display")
     text(slide, "Questions?", 0.78, 6.1, 2.0, 0.25, 14, RGBColor(181, 201, 205))

@@ -49,3 +49,5 @@ Run the project and paste screenshots from the dashboard here. Record the follow
 ## 7. Conclusion and future work
 
 The project demonstrates an end-to-end big data workflow from distributed processing to a web-based decision dashboard. The implemented extensions add official TLC zone names, GeoJSON boundaries, an interactive Leaflet map, Spark Structured Streaming for live event demand, and a Spark ML linear regression model for fare prediction. The model uses trip distance, duration, pickup hour, passenger count, and pickup/drop-off zones. Future improvements could include weather integration, Kafka deployment, and more advanced models such as Random Forest or Gradient-Boosted Trees.
+
+The dashboard includes a “Try a trip” form. A user can enter trip characteristics and receive a predicted fare through the `/api/predict-fare` endpoint. The displayed estimate is generated from the coefficients learned by Spark ML and stored in MongoDB.

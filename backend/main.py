@@ -4,6 +4,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel, Field
 
 from backend.database import collection_documents, get_database, mongo_is_available
 
@@ -23,6 +24,15 @@ app.add_middleware(
 
 STATIC_DIR = Path(__file__).parent / "static"
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+
+class FarePredictionRequest(BaseModel):
+    trip_distance: float = Field(gt=0, le=200)
+    duration_minutes: float = Field(gt=0, le=300)
+    pickup_hour: int = Field(ge=0, le=23)
+    passenger_count: float = Field(ge=0, le=9)
+    pickup_zone: int = Field(ge=1, le=263)
+    dropoff_zone: int = Field(ge=1, le=263)
 
 
 @app.get("/", include_in_schema=False)
@@ -80,6 +90,31 @@ def streaming_status() -> dict:
 def ml_results() -> dict:
     documents = collection_documents("ml_results")
     return documents[0] if documents else {"status": "not-trained", "message": "Run spark_analyze.py to train the model."}
+
+
+@app.post("/api/predict-fare")
+def predict_fare(request: FarePredictionRequest) -> dict:
+    documents = collection_documents("ml_results")
+    if not documents or "coefficients" not in documents[0]:
+        raise HTTPException(status_code=404, detail="Model not trained. Run spark_analyze.py first.")
+    model = documents[0]
+    values = {
+        "trip_distance": request.trip_distance,
+        "duration_minutes": request.duration_minutes,
+        "pickup_hour": request.pickup_hour,
+        "passenger_count": request.passenger_count,
+        "pickup_zone": request.pickup_zone,
+        "dropoff_zone": request.dropoff_zone,
+    }
+    predicted = float(model.get("intercept", 0)) + sum(
+        float(item["coefficient"]) * values[item["feature"]] for item in model["coefficients"]
+    )
+    return {
+        "predicted_fare": round(max(0, predicted), 2),
+        "currency": "USD",
+        "model": model["model"],
+        "inputs": values,
+    }
 
 
 @app.get("/api/metadata")

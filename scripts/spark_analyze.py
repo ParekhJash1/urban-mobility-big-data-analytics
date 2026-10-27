@@ -222,6 +222,7 @@ def main() -> None:
             "rmse": round(float(rmse), 3),
             "mae": round(float(mae), 3),
             "r2": round(float(r2), 3),
+            "intercept": round(float(model.intercept), 4),
             "coefficients": [
                 {"feature": feature, "coefficient": round(float(coefficient), 4)}
                 for feature, coefficient in zip(ml_columns, model.coefficients)

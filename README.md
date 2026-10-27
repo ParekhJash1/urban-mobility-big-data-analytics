@@ -158,6 +158,7 @@ For a larger demonstration, download several months and compare the Spark execut
 | GET | `/api/streaming-demand` | Live demand aggregates |
 | GET | `/api/streaming-status` | Live processing status |
 | GET | `/api/ml-results` | Spark ML metrics and predictions |
+| POST | `/api/predict-fare` | Predict a fare from trip inputs |
 
 ## Suggested presentation storyline
 

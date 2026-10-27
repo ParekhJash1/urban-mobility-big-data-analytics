@@ -81,6 +81,25 @@ function drawMl(results) {
   document.getElementById('predictions-body').innerHTML = (results.predictions || []).slice(0, 6).map(row => `<tr><td>${Number(row.distance).toFixed(2)} mi</td><td>${Number(row.duration).toFixed(1)} min</td><td>${money(row.actual_fare)}</td><td>${money(row.predicted_fare)}</td></tr>`).join('');
 }
 
+async function predictFare(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const inputs = Object.fromEntries(new FormData(form).entries());
+  Object.keys(inputs).forEach(key => { inputs[key] = Number(inputs[key]); });
+  const output = document.getElementById('predicted-fare');
+  const note = document.getElementById('prediction-note');
+  output.textContent = '…';
+  try {
+    const result = await fetch('/api/predict-fare', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(inputs) }).then(response => response.json());
+    if (result.predicted_fare === undefined) throw new Error(result.detail || 'Prediction failed');
+    output.textContent = money(result.predicted_fare);
+    note.textContent = `Estimated fare from ${result.model}. This is an analytical estimate, not a live booking quote.`;
+  } catch (error) {
+    output.textContent = '—';
+    note.textContent = error.message;
+  }
+}
+
 async function loadDashboard() {
   try {
     const [health, overview, hourly, routes, zones, metadata, streaming, streamStatus, mlResults] = await Promise.all([
@@ -105,3 +124,4 @@ async function loadDashboard() {
 }
 
 loadDashboard();
+document.getElementById('fare-form').addEventListener('submit', predictFare);

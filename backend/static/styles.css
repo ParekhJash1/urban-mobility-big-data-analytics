@@ -44,6 +44,14 @@ h3 { margin: 0; font-size: 18px; letter-spacing: -.03em; }
 .ml-metrics div { background: #fff4ee; border: 1px solid #f7d4c3; padding: 12px; }
 .ml-metrics strong { display: block; color: var(--orange); font-size: 22px; letter-spacing: -.05em; }
 .ml-metrics span { color: var(--muted); font: 9px 'DM Mono', monospace; }
+.fare-predictor { border-top: 1px solid var(--line); margin-top: 20px; padding-top: 16px; }
+.predictor-heading { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.predictor-heading h4 { margin: 0; font-size: 13px; }.predictor-heading strong { color: var(--orange); font-size: 24px; }
+.fare-form { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.fare-form label { color: var(--muted); font: 9px 'DM Mono', monospace; }
+.fare-form input { display: block; width: 100%; margin-top: 4px; padding: 7px; border: 1px solid var(--line); color: var(--ink); font: 11px Manrope, sans-serif; }
+.fare-form button { grid-column: span 3; border: 0; background: var(--orange); color: white; padding: 9px; cursor: pointer; font: 600 11px Manrope, sans-serif; }
+.prediction-note { color: var(--muted); font-size: 10px; margin: 10px 0 0; }
 .route-panel { margin-top: 16px; }
 .table-scroll { overflow-x: auto; margin-top: 18px; }
 table { border-collapse: collapse; width: 100%; font-size: 13px; }
@@ -57,4 +65,5 @@ footer { border-top: 1px solid var(--line); padding: 24px 6vw; color: #8b999e; t
 @media (max-width: 800px) { .hero-inner { display: block; }.status-pill { display: inline-block; margin-top: 28px; }.kpi-grid { grid-template-columns: repeat(2, 1fr); }.chart-grid { grid-template-columns: 1fr; }.container { padding-top: 38px; } }
 @media (max-width: 800px) { .stream-grid { grid-template-columns: 1fr; }.zone-map { height: 330px; } }
 @media (max-width: 800px) { .ml-grid { grid-template-columns: 1fr; } }
+@media (max-width: 500px) { .fare-form { grid-template-columns: repeat(2, 1fr); }.fare-form button { grid-column: span 2; } }
 @media (max-width: 460px) { .kpi-grid { grid-template-columns: 1fr; }.section-heading { display: block; }.data-window { margin-top: 12px; }.pipeline { gap: 7px; } }
