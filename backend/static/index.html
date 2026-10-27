@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Urban Mobility Analytics</title>
     <link rel="stylesheet" href="/static/styles.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   </head>
   <body>
     <header class="hero">
@@ -46,14 +48,32 @@
         </article>
       </section>
 
+      <section class="panel map-panel">
+        <div class="panel-heading"><div><p class="eyebrow dark">GEOGRAPHIC ANALYSIS</p><h3>Taxi demand by named zone</h3></div><span class="panel-tag">Interactive map</span></div>
+        <div id="zone-map" class="zone-map"><div class="map-loading">Loading taxi zone boundaries…</div></div>
+        <p class="map-note">Zone names and boundaries come from the official NYC TLC taxi zone lookup and shapefile.</p>
+      </section>
+
       <section class="panel route-panel">
         <div class="panel-heading"><div><p class="eyebrow dark">ROUTE ANALYSIS</p><h3>Most frequent routes</h3></div><span class="panel-tag">Pickup → drop-off</span></div>
         <div class="table-scroll"><table><thead><tr><th>Rank</th><th>Pickup zone</th><th>Drop-off zone</th><th>Trips</th><th>Average fare</th></tr></thead><tbody id="routes-body"><tr><td colspan="5">Loading route results…</td></tr></tbody></table></div>
       </section>
 
+      <section class="stream-grid">
+        <article class="panel stream-panel">
+          <div class="panel-heading"><div><p class="eyebrow dark">LIVE PIPELINE</p><h3>Structured streaming status</h3></div><span class="panel-tag" id="stream-status">Waiting</span></div>
+          <div class="stream-metrics"><strong id="stream-events">0</strong><span>events processed</span><strong id="stream-batch">—</strong><span>last batch records</span></div>
+          <p class="method-copy">Spark Structured Streaming reads new JSON events, aggregates demand, and writes live results to MongoDB.</p>
+        </article>
+        <article class="panel stream-panel">
+          <div class="panel-heading"><div><p class="eyebrow dark">STREAMING DEMAND</p><h3>Live events by hour</h3></div></div>
+          <div class="chart-wrap small-chart"><canvas id="stream-chart"></canvas></div>
+        </article>
+      </section>
+
       <section class="methodology">
         <div><p class="eyebrow dark">PIPELINE STATUS</p><h2>From raw data to insight</h2></div>
-        <div class="pipeline"><span>NYC TLC Parquet</span><b>→</b><span class="active-step">Apache Spark ETL</span><b>→</b><span>MongoDB</span><b>→</b><span>FastAPI</span><b>→</b><span>Dashboard</span></div>
+        <div class="pipeline"><span>NYC TLC Parquet</span><b>→</b><span class="active-step">Apache Spark ETL</span><b>→</b><span>MongoDB</span><b>→</b><span>FastAPI</span><b>→</b><span>Dashboard</span><span class="active-step">＋ Structured Streaming</span></div>
         <p class="method-copy" id="metadata">Analytics metadata will appear here after the pipeline runs.</p>
       </section>
     </main>

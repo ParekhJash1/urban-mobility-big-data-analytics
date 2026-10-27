@@ -11,7 +11,7 @@ from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
 from pptx.util import Inches, Pt
 
 
-OUT = Path(__file__).resolve().parent / "Urban_Mobility_Big_Data_Analytics_Jash_Parekh.pptx"
+OUT = Path(__file__).resolve().parent / "Urban_Mobility_Big_Data_Analytics_Jash_Parekh_Updated.pptx"
 
 NAVY = RGBColor(16, 43, 58)
 INK = RGBColor(16, 32, 44)
@@ -268,7 +268,7 @@ def build_presentation():
     slide = prs.slides.add_slide(blank)
     base(slide, 5)
     title(slide, "04 · system architecture", "One pipeline, five layers", "Each component has a focused responsibility: process, store, serve, visualize, and communicate.")
-    labels = [("1", "TLC Parquet", "Raw public data", LIGHT_BLUE, BLUE), ("2", "Apache Spark", "ETL + aggregations", PALE_MINT, TEAL), ("3", "MongoDB", "Analytics store", LIGHT_ORANGE, ORANGE), ("4", "FastAPI", "REST backend", RGBColor(238, 233, 253), PURPLE), ("5", "Dashboard", "Charts + KPIs", NAVY, MINT)]
+    labels = [("1", "TLC Parquet", "Raw public data", LIGHT_BLUE, BLUE), ("2", "Apache Spark", "ETL + streaming", PALE_MINT, TEAL), ("3", "MongoDB", "Analytics store", LIGHT_ORANGE, ORANGE), ("4", "FastAPI", "REST backend", RGBColor(238, 233, 253), PURPLE), ("5", "Dashboard", "Charts + map", NAVY, MINT)]
     xs = [0.65, 3.15, 5.65, 8.15, 10.65]
     for i, (num, name, desc, fill, accent) in enumerate(labels):
         shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, xs[i], 2.55, 2.02, 1.72, fill, fill)
@@ -280,7 +280,7 @@ def build_presentation():
             line(slide, xs[i] + 2.04, 3.41, xs[i] + 2.42, 3.41, TEAL, 2, True)
     shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, 1.05, 5.15, 11.15, 0.92, WHITE, LINE)
     text(slide, "Design principle", 1.35, 5.43, 1.7, 0.2, 9, TEAL, True)
-    text(slide, "Process expensive raw data once → store small, fast-to-query results → serve a responsive user experience.", 3.1, 5.34, 8.55, 0.35, 16, INK, True, "Aptos Display")
+    text(slide, "Process batch and live events → store fast-to-query results → serve a responsive user experience.", 3.1, 5.34, 8.55, 0.35, 16, INK, True, "Aptos Display")
 
     # 6. Spark ETL
     slide = prs.slides.add_slide(blank)
@@ -313,10 +313,11 @@ def build_presentation():
         ("hourly_demand", "24-hour demand", TEAL),
         ("top_routes", "Route ranking", ORANGE),
         ("zone_performance", "Zone metrics", PURPLE),
+        ("streaming_demand", "Live demand", ORANGE),
         ("metadata", "Lineage + status", GREEN),
     ]
     for i, (name, desc, accent) in enumerate(collections):
-        yy = 2.02 + i * 0.72
+        yy = 2.02 + i * 0.61
         shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, 0.75, yy, 5.15, 0.52, WHITE, LINE)
         shape(slide, MSO_AUTO_SHAPE_TYPE.RECTANGLE, 0.75, yy, 0.08, 0.52, accent)
         text(slide, name, 1.05, yy + 0.13, 2.35, 0.2, 11, INK, True, "Courier New")
@@ -358,6 +359,7 @@ def build_presentation():
     shape(slide, MSO_AUTO_SHAPE_TYPE.RECTANGLE, 0.65, 1.95, 12.02, 0.58, NAVY)
     text(slide, "URBAN MOBILITY ANALYTICS", 0.98, 2.14, 4.0, 0.2, 11, WHITE, True)
     label_box(slide, "MongoDB connected", 10.35, 2.05, 1.85, PALE_MINT, TEAL, 8)
+    label_box(slide, "MAP + LIVE STREAM", 8.15, 2.05, 1.85, LIGHT_ORANGE, ORANGE, 8)
     for i, (label, value, accent) in enumerate([("TOTAL TRIPS", "2.87M", BLUE), ("REVENUE", "$78.42M", ORANGE), ("AVG FARE", "$18.49", GREEN), ("AVG DISTANCE", "3.29 mi", PURPLE)]):
         xx = 0.98 + i * 2.9
         shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, xx, 2.88, 2.55, 0.88, PAPER, LINE)
@@ -366,7 +368,7 @@ def build_presentation():
         text(slide, value, xx + 0.18, 3.29, 2.1, 0.25, 16, INK, True)
     text(slide, "Trips by pickup hour", 1.0, 4.22, 2.4, 0.2, 10, INK, True)
     add_line_chart(slide, [28, 22, 18, 15, 14, 22, 35, 48, 55, 50, 42, 37, 34, 32, 31, 35, 43, 57, 64, 60, 51, 44, 39, 33], ["00", "03", "06", "09", "12", "15", "18", "21", "23"], 0.95, 4.52, 5.35, 1.25, BLUE)
-    text(slide, "Busiest zones", 6.7, 4.22, 2.0, 0.2, 10, INK, True)
+    text(slide, "Busiest zones + map", 6.7, 4.22, 2.4, 0.2, 10, INK, True)
     add_bar_chart(slide, [94, 88, 76, 70, 65, 62], ["132", "138", "161", "237", "170", "234"], 6.65, 4.48, 5.55, 1.3, GREEN, "trips")
 
     # 10. Results
@@ -393,10 +395,10 @@ def build_presentation():
     title(slide, "10 · live demonstration", "How to present the system", "A short sequence shows the complete path from processing command to user-facing insight.")
     demo_steps = [
         ("01", "Show MongoDB", "Open Compass and show the taxi_analytics collections."),
-        ("02", "Show API docs", "Open http://127.0.0.1:8000/docs and expand an endpoint."),
-        ("03", "Open dashboard", "Show KPI cards, hourly demand, zones, and routes."),
-        ("04", "Explain Spark", "Open spark_analyze.py and point to cleaning + groupBy."),
-        ("05", "Discuss insight", "Connect the visual pattern to transport planning."),
+        ("02", "Show named map", "Open the dashboard and click a taxi zone to show its name and metrics."),
+        ("03", "Start streaming", "Run stream_demand.py and stream_producer.py in two terminals."),
+        ("04", "Show API docs", "Open http://127.0.0.1:8000/docs and expand an endpoint."),
+        ("05", "Discuss insight", "Connect batch and live demand patterns to transport planning."),
     ]
     for i, (num, name, desc) in enumerate(demo_steps):
         yy = 2.0 + i * 0.78
@@ -430,15 +432,15 @@ def build_presentation():
         text(slide, challenge, 1.0, yy + 0.13, 4.5, 0.2, 10, INK, True)
         text(slide, solution, 6.47, yy + 0.13, 5.8, 0.2, 10, INK)
 
-    # 13. Future work
+    # 13. Implemented extensions and roadmap
     slide = prs.slides.add_slide(blank)
     base(slide, 13)
-    title(slide, "12 · next steps", "How this project can grow", "The current system is a strong batch analytics foundation for more advanced big data features.")
+    title(slide, "12 · extensions", "What was implemented next", "The two capabilities shown in the roadmap are now working features in the project.")
     future = [
-        ("01", "Zone names + maps", "Join taxi zone lookup data and add a geographic heatmap."),
-        ("02", "Spark ML", "Predict fare or trip duration from distance, hour, and zone."),
-        ("03", "Streaming", "Use Kafka or Spark Structured Streaming for live demand."),
-        ("04", "More context", "Add weather, holidays, events, and traffic data."),
+        ("01", "Zone names + maps", "Implemented with official TLC lookup data, GeoJSON, and Leaflet."),
+        ("02", "Structured streaming", "Implemented with Spark Structured Streaming and MongoDB live aggregates."),
+        ("03", "Spark ML", "Next roadmap item: predict fare or trip duration from trip features."),
+        ("04", "More context", "Next roadmap item: add weather, holidays, events, and traffic data."),
     ]
     for i, (num, name, desc) in enumerate(future):
         xx = 0.75 + (i % 2) * 6.05
@@ -449,7 +451,7 @@ def build_presentation():
         text(slide, name, xx + 1.15, yy + 0.24, 3.9, 0.24, 15, INK, True)
         text(slide, desc, xx + 1.15, yy + 0.61, 3.9, 0.3, 10, MUTED)
     shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, 1.8, 5.7, 9.7, 0.55, NAVY, NAVY)
-    text(slide, "Batch analytics today → intelligent urban mobility platform tomorrow", 2.0, 5.87, 9.3, 0.2, 14, MINT, True, "Aptos Display", PP_ALIGN.CENTER)
+    text(slide, "Batch + live analytics today → intelligent urban mobility platform tomorrow", 2.0, 5.87, 9.3, 0.2, 14, MINT, True, "Aptos Display", PP_ALIGN.CENTER)
 
     # 14. Summary
     slide = prs.slides.add_slide(blank)
@@ -458,9 +460,10 @@ def build_presentation():
     shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, 0.75, 2.1, 11.85, 2.55, RGBColor(28, 62, 76), RGBColor(46, 91, 105))
     bullet_list(slide, [
         "Apache Spark processed and cleaned 2.87 million taxi trips.",
-        "MongoDB stores reusable, dashboard-ready analytical collections.",
+        "Official zone names and an interactive demand map make the results geographic.",
+        "MongoDB stores reusable batch and streaming analytical collections.",
         "FastAPI exposes the results through a clean REST interface.",
-        "The dashboard makes demand, revenue, zones, and routes easy to explain.",
+        "The dashboard makes demand, revenue, zones, routes, and live events easy to explain.",
     ], 1.15, 2.55, 10.7, 1.75, 16, WHITE, 0.42)
     text(slide, "Thank you", 0.75, 5.42, 4.0, 0.55, 34, MINT, True, "Aptos Display")
     text(slide, "Questions?", 0.78, 6.1, 2.0, 0.25, 14, RGBColor(181, 201, 205))
@@ -477,7 +480,8 @@ def build_presentation():
         "scripts/spark_analyze.py — Spark ETL",
         "backend/main.py — FastAPI routes",
         "backend/static/ — dashboard frontend",
-        "scripts/seed_demo.py — demo data",
+        "scripts/download_zone_data.py — named zones + map",
+        "scripts/stream_demand.py — live Spark stream",
         "docs/project_report.md — written report",
     ], 7.45, 2.78, 4.5, 2.05, 11, INK, 0.37)
     text(slide, "Dashboard: http://127.0.0.1:8000", 0.78, 5.95, 5.4, 0.24, 13, TEAL, True, "Courier New")

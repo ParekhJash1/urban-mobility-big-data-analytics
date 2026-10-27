@@ -59,6 +59,23 @@ def zone_performance() -> list[dict]:
     return collection_documents("zone_performance")
 
 
+@app.get("/api/zone-map")
+def zone_map() -> list[dict]:
+    """Return named zone metrics used by the geographic map."""
+    return collection_documents("zone_performance")
+
+
+@app.get("/api/streaming-demand")
+def streaming_demand() -> list[dict]:
+    return collection_documents("streaming_demand")
+
+
+@app.get("/api/streaming-status")
+def streaming_status() -> dict:
+    documents = collection_documents("stream_status")
+    return documents[0] if documents else {"status": "waiting", "events_processed": 0}
+
+
 @app.get("/api/metadata")
 def metadata() -> dict:
     documents = collection_documents("metadata")

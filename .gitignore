@@ -6,3 +6,8 @@ data/raw/*
 !data/raw/.gitkeep
 data/processed/*
 !data/processed/.gitkeep
+data/stream/incoming/*
+!data/stream/incoming/.gitkeep
+data/stream/checkpoint/*
+!data/stream/checkpoint/.gitkeep
+hadoop-local/

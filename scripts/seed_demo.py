@@ -30,16 +30,16 @@ def main() -> None:
     for row in hourly:
         row["revenue"] = round(row["trips"] * random.uniform(15, 19), 2)
     routes = [
-        {"pickup_zone": 132, "dropoff_zone": 138, "trips": 18742, "average_fare": 52.18},
-        {"pickup_zone": 138, "dropoff_zone": 132, "trips": 16381, "average_fare": 49.83},
-        {"pickup_zone": 161, "dropoff_zone": 237, "trips": 12406, "average_fare": 18.42},
-        {"pickup_zone": 237, "dropoff_zone": 161, "trips": 11880, "average_fare": 17.96},
-        {"pickup_zone": 170, "dropoff_zone": 234, "trips": 10977, "average_fare": 16.31},
-        {"pickup_zone": 234, "dropoff_zone": 170, "trips": 10381, "average_fare": 15.88},
+        {"pickup_zone": 132, "pickup_name": "JFK Airport", "dropoff_zone": 138, "dropoff_name": "LaGuardia Airport", "trips": 18742, "average_fare": 52.18},
+        {"pickup_zone": 138, "pickup_name": "LaGuardia Airport", "dropoff_zone": 132, "dropoff_name": "JFK Airport", "trips": 16381, "average_fare": 49.83},
+        {"pickup_zone": 161, "pickup_name": "Midtown Center", "dropoff_zone": 237, "dropoff_name": "Upper East Side South", "trips": 12406, "average_fare": 18.42},
+        {"pickup_zone": 237, "pickup_name": "Upper East Side South", "dropoff_zone": 161, "dropoff_name": "Midtown Center", "trips": 11880, "average_fare": 17.96},
+        {"pickup_zone": 170, "pickup_name": "Murray Hill", "dropoff_zone": 234, "dropoff_name": "Union Sq", "trips": 10977, "average_fare": 16.31},
+        {"pickup_zone": 234, "pickup_name": "Union Sq", "dropoff_zone": 170, "dropoff_name": "Murray Hill", "trips": 10381, "average_fare": 15.88},
     ]
     zones = [
-        {"pickup_zone": zone, "trips": trips, "revenue": round(trips * random.uniform(16, 20), 2), "average_distance": round(random.uniform(2.1, 5.8), 2)}
-        for zone, trips in [(132, 94231), (138, 88104), (161, 76324), (237, 70181), (170, 65210), (234, 61904), (48, 57402), (79, 52881), (230, 50122), (164, 49211)]
+        {"pickup_zone": zone, "zone_name": name, "borough": borough, "trips": trips, "revenue": round(trips * random.uniform(16, 20), 2), "average_distance": round(random.uniform(2.1, 5.8), 2)}
+        for zone, name, borough, trips in [(132, "JFK Airport", "Queens", 94231), (138, "LaGuardia Airport", "Queens", 88104), (161, "Midtown Center", "Manhattan", 76324), (237, "Upper East Side South", "Manhattan", 70181), (170, "Murray Hill", "Manhattan", 65210), (234, "Union Sq", "Manhattan", 61904), (48, "Clinton East", "Manhattan", 57402), (79, "East Village", "Manhattan", 52881), (230, "Times Sq/Theatre District", "Manhattan", 50122), (164, "Midtown South", "Manhattan", 49211)]
     ]
     collections = {
         "overview": [overview],

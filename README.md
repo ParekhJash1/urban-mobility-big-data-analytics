@@ -28,8 +28,11 @@ big-data-taxi-analytics/
 ├── data/raw/                 # Downloaded Parquet files (ignored by git)
 ├── scripts/
 │   ├── download_data.py      # Downloads a public TLC data month
+│   ├── download_zone_data.py # Downloads named zones and GeoJSON boundaries
 │   ├── seed_demo.py          # Creates immediate demo data in MongoDB
-│   └── spark_analyze.py      # Spark ETL, aggregations, and MongoDB loading
+│   ├── spark_analyze.py      # Spark ETL, aggregations, and MongoDB loading
+│   ├── stream_demand.py      # Spark Structured Streaming consumer
+│   └── stream_producer.py    # Local live-event producer for the demo
 ├── docker-compose.yml
 ├── requirements.txt
 └── .env.example
@@ -79,6 +82,22 @@ uvicorn backend.main:app --reload
 
 Open <http://127.0.0.1:8000> in a browser. API documentation is available at <http://127.0.0.1:8000/docs>.
 
+### 5. Add zone names and the interactive map
+
+Download the official TLC zone lookup table and boundary data:
+
+```bash
+python scripts/download_zone_data.py
+```
+
+Run the Spark pipeline with the lookup table:
+
+```bash
+python scripts/spark_analyze.py --input data/raw/yellow_tripdata_2024-01.parquet --zone-lookup data/zones/taxi_zone_lookup.csv
+```
+
+The dashboard then shows named neighborhoods, route names, and an interactive Leaflet map shaded by pickup demand.
+
 ## Run the real Spark pipeline
 
 Download one public TLC Yellow Taxi Parquet file:
@@ -99,6 +118,31 @@ The pipeline filters invalid records, derives trip duration and pickup hour, com
 python scripts/spark_analyze.py --input "data/raw/*.parquet"
 ```
 
+## Run live streaming analytics
+
+The project includes a working Spark Structured Streaming path. The default rate source is portable on Windows and does not require Kafka or Hadoop native binaries. Start it in one terminal:
+
+```bash
+python scripts/stream_demand.py
+```
+
+On Windows, Spark checkpoints additionally require the small Hadoop helper. Run this once from the project directory:
+
+```powershell
+python scripts\setup_windows_spark.py
+```
+
+The streaming script automatically uses the project-local `hadoop-local` folder afterward.
+
+The dashboard will show live event counts and hourly demand. To use generated JSON files instead, run the consumer with `--source file` and generate events in another terminal:
+
+```bash
+python scripts/stream_demand.py --source file
+python scripts/stream_producer.py --events 30 --interval 0.5
+```
+
+The live event counts and hourly demand are written to MongoDB collections `stream_status` and `streaming_demand`, then displayed by the dashboard. For a Kafka deployment, replace the file source in `stream_demand.py` with Spark's Kafka source and provide the Spark Kafka connector package.
+
 For a larger demonstration, download several months and compare the Spark execution time and record counts.
 
 ## REST API
@@ -110,6 +154,9 @@ For a larger demonstration, download several months and compare the Spark execut
 | GET | `/api/hourly-demand` | Trips by pickup hour |
 | GET | `/api/top-routes` | Most frequent pickup/drop-off routes |
 | GET | `/api/zone-performance` | Zone-level trip and revenue metrics |
+| GET | `/api/zone-map` | Named zone metrics for the map |
+| GET | `/api/streaming-demand` | Live demand aggregates |
+| GET | `/api/streaming-status` | Live processing status |
 
 ## Suggested presentation storyline
 
@@ -118,7 +165,7 @@ For a larger demonstration, download several months and compare the Spark execut
 3. **Architecture:** Spark distributes cleaning and aggregation; MongoDB stores query-friendly results; FastAPI exposes them to the dashboard.
 4. **Analytics:** Peak hours, busiest routes, average fare, distance, duration, and revenue.
 5. **Result:** An interactive dashboard that turns large raw files into decisions a transport manager can use.
-6. **Future work:** Add weather data, a Spark ML fare prediction model, Kafka streaming, and a map visualization.
+6. **Extensions:** Add weather data, a Spark ML fare prediction model, and Kafka as an alternative streaming source.
 
 ## Important notes
 

@@ -20,6 +20,7 @@ def replace_collection(database, name: str, documents: list[dict]) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run distributed taxi analytics with Apache Spark")
     parser.add_argument("--input", required=True, help="Parquet file, directory, or glob")
+    parser.add_argument("--zone-lookup", default="data/zones/taxi_zone_lookup.csv", help="Official TLC zone lookup CSV")
     args = parser.parse_args()
 
     input_path = args.input
@@ -76,6 +77,20 @@ def main() -> None:
         if total_trips == 0:
             raise ValueError("No valid trips remained after cleaning")
 
+        zone_lookup_available = os.path.exists(args.zone_lookup)
+        if zone_lookup_available:
+            zone_lookup = (
+                spark.read.option("header", "true").option("inferSchema", "true").csv(args.zone_lookup)
+                .select(
+                    F.col("LocationID").cast("int").alias("zone_id"),
+                    F.col("Borough").alias("borough"),
+                    F.col("Zone").alias("zone_name"),
+                )
+                .dropDuplicates(["zone_id"])
+            )
+        else:
+            zone_lookup = None
+
         overview_row = trips.agg(
             F.sum("total_amount").alias("total_revenue"),
             F.avg("fare_amount").alias("average_fare"),
@@ -101,15 +116,48 @@ def main() -> None:
             .orderBy("pickup_hour")
             .collect()
         ]
+        route_aggregate = trips.groupBy("pickup_zone", "dropoff_zone").agg(
+            F.count("*").alias("trips"), F.avg("fare_amount").alias("average_fare")
+        )
+        zone_aggregate = trips.groupBy("pickup_zone").agg(
+            F.count("*").alias("trips"),
+            F.sum("total_amount").alias("revenue"),
+            F.avg("trip_distance").alias("average_distance"),
+        )
+        if zone_lookup is not None:
+            pickup_lookup = zone_lookup.select(
+                F.col("zone_id").alias("pickup_zone"),
+                F.col("zone_name").alias("pickup_name"),
+                F.col("borough").alias("pickup_borough"),
+            )
+            dropoff_lookup = zone_lookup.select(
+                F.col("zone_id").alias("dropoff_zone"),
+                F.col("zone_name").alias("dropoff_name"),
+                F.col("borough").alias("dropoff_borough"),
+            )
+            route_aggregate = route_aggregate.join(pickup_lookup, "pickup_zone", "left").join(dropoff_lookup, "dropoff_zone", "left")
+            zone_aggregate = zone_aggregate.join(
+                zone_lookup.select(
+                    F.col("zone_id").alias("pickup_zone"),
+                    F.col("zone_name"),
+                    F.col("borough"),
+                ),
+                "pickup_zone",
+                "left",
+            )
+
         routes = [
             {
                 "pickup_zone": int(row["pickup_zone"]),
                 "dropoff_zone": int(row["dropoff_zone"]),
+                "pickup_name": row["pickup_name"] if zone_lookup is not None and row["pickup_name"] else f"Zone {int(row['pickup_zone'])}",
+                "dropoff_name": row["dropoff_name"] if zone_lookup is not None and row["dropoff_name"] else f"Zone {int(row['dropoff_zone'])}",
+                "pickup_borough": row["pickup_borough"] if zone_lookup is not None and row["pickup_borough"] else "Unknown",
+                "dropoff_borough": row["dropoff_borough"] if zone_lookup is not None and row["dropoff_borough"] else "Unknown",
                 "trips": int(row["trips"]),
                 "average_fare": round(float(row["average_fare"]), 2),
             }
-            for row in trips.groupBy("pickup_zone", "dropoff_zone")
-            .agg(F.count("*").alias("trips"), F.avg("fare_amount").alias("average_fare"))
+            for row in route_aggregate
             .orderBy(F.desc("trips"))
             .limit(10)
             .collect()
@@ -117,16 +165,13 @@ def main() -> None:
         zones = [
             {
                 "pickup_zone": int(row["pickup_zone"]),
+                "zone_name": row["zone_name"] if zone_lookup is not None and row["zone_name"] else f"Zone {int(row['pickup_zone'])}",
+                "borough": row["borough"] if zone_lookup is not None and row["borough"] else "Unknown",
                 "trips": int(row["trips"]),
                 "revenue": round(float(row["revenue"]), 2),
                 "average_distance": round(float(row["average_distance"]), 2),
             }
-            for row in trips.groupBy("pickup_zone")
-            .agg(
-                F.count("*").alias("trips"),
-                F.sum("total_amount").alias("revenue"),
-                F.avg("trip_distance").alias("average_distance"),
-            )
+            for row in zone_aggregate
             .orderBy(F.desc("trips"))
             .limit(15)
             .collect()
@@ -144,6 +189,7 @@ def main() -> None:
             "input": str(args.input),
             "cleaned_records": total_trips,
             "engine": "Apache Spark / PySpark",
+            "zone_lookup": zone_lookup_available,
         }])
         client.close()
         print(f"Loaded analytics for {total_trips:,} valid trips into MongoDB")
