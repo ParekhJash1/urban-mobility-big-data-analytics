@@ -22,7 +22,7 @@ TLC Parquet files
       ↓
 Apache Spark: read → clean → transform → aggregate
       ↓
-MongoDB: overview, hourly_demand, top_routes, zone_performance, streaming_demand
+MongoDB: overview, hourly_demand, top_routes, zone_performance, streaming_demand, ml_results
       ↓
 FastAPI REST API
       ↓
@@ -48,4 +48,4 @@ Run the project and paste screenshots from the dashboard here. Record the follow
 
 ## 7. Conclusion and future work
 
-The project demonstrates an end-to-end big data workflow from distributed processing to a web-based decision dashboard. The implemented extension adds official TLC zone names, GeoJSON boundaries, an interactive Leaflet map, and Spark Structured Streaming for live event demand. The portable rate source works on Windows without Hadoop native binaries; a JSON-file source and Kafka connector can be used for deployment scenarios. Future improvements could include weather integration, Kafka deployment, and a Spark ML model for fare prediction.
+The project demonstrates an end-to-end big data workflow from distributed processing to a web-based decision dashboard. The implemented extensions add official TLC zone names, GeoJSON boundaries, an interactive Leaflet map, Spark Structured Streaming for live event demand, and a Spark ML linear regression model for fare prediction. The model uses trip distance, duration, pickup hour, passenger count, and pickup/drop-off zones. Future improvements could include weather integration, Kafka deployment, and more advanced models such as Random Forest or Gradient-Boosted Trees.

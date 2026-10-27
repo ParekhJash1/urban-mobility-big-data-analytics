@@ -41,11 +41,27 @@ def main() -> None:
         {"pickup_zone": zone, "zone_name": name, "borough": borough, "trips": trips, "revenue": round(trips * random.uniform(16, 20), 2), "average_distance": round(random.uniform(2.1, 5.8), 2)}
         for zone, name, borough, trips in [(132, "JFK Airport", "Queens", 94231), (138, "LaGuardia Airport", "Queens", 88104), (161, "Midtown Center", "Manhattan", 76324), (237, "Upper East Side South", "Manhattan", 70181), (170, "Murray Hill", "Manhattan", 65210), (234, "Union Sq", "Manhattan", 61904), (48, "Clinton East", "Manhattan", 57402), (79, "East Village", "Manhattan", 52881), (230, "Times Sq/Theatre District", "Manhattan", 50122), (164, "Midtown South", "Manhattan", 49211)]
     ]
+    ml_results = [{
+        "model": "Spark ML Linear Regression",
+        "target": "fare_amount",
+        "features": ["trip_distance", "duration_minutes", "pickup_hour", "passenger_count", "pickup_zone", "dropoff_zone"],
+        "training_records": 120000,
+        "testing_records": 30000,
+        "rmse": 4.82,
+        "mae": 2.71,
+        "r2": 0.76,
+        "predictions": [
+            {"actual_fare": 18.50, "predicted_fare": 17.92, "distance": 3.20, "duration": 16.4},
+            {"actual_fare": 42.00, "predicted_fare": 39.88, "distance": 12.10, "duration": 38.2},
+            {"actual_fare": 9.50, "predicted_fare": 10.42, "distance": 1.40, "duration": 8.1},
+        ],
+    }]
     collections = {
         "overview": [overview],
         "hourly_demand": hourly,
         "top_routes": routes,
         "zone_performance": zones,
+        "ml_results": ml_results,
         "metadata": [{
             "source": "Demo data modeled on NYC TLC Yellow Taxi Trip Records",
             "processed_at": datetime.now(timezone.utc).isoformat(),

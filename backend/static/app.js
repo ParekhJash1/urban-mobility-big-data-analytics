@@ -71,10 +71,20 @@ function drawStreaming(rows, status) {
   });
 }
 
+function drawMl(results) {
+  if (!results || !results.model) return;
+  document.getElementById('ml-model').textContent = 'Model trained';
+  document.getElementById('ml-r2').textContent = Number(results.r2 || 0).toFixed(3);
+  document.getElementById('ml-rmse').textContent = Number(results.rmse || 0).toFixed(2);
+  document.getElementById('ml-mae').textContent = Number(results.mae || 0).toFixed(2);
+  document.getElementById('ml-summary').textContent = `${results.model} · ${number(results.training_records)} training records · ${number(results.testing_records)} test records · target: ${results.target}`;
+  document.getElementById('predictions-body').innerHTML = (results.predictions || []).slice(0, 6).map(row => `<tr><td>${Number(row.distance).toFixed(2)} mi</td><td>${Number(row.duration).toFixed(1)} min</td><td>${money(row.actual_fare)}</td><td>${money(row.predicted_fare)}</td></tr>`).join('');
+}
+
 async function loadDashboard() {
   try {
-    const [health, overview, hourly, routes, zones, metadata, streaming, streamStatus] = await Promise.all([
-      getJson('/api/health'), getJson('/api/overview'), getJson('/api/hourly-demand'), getJson('/api/top-routes'), getJson('/api/zone-performance'), getJson('/api/metadata'), getJson('/api/streaming-demand'), getJson('/api/streaming-status')
+    const [health, overview, hourly, routes, zones, metadata, streaming, streamStatus, mlResults] = await Promise.all([
+      getJson('/api/health'), getJson('/api/overview'), getJson('/api/hourly-demand'), getJson('/api/top-routes'), getJson('/api/zone-performance'), getJson('/api/metadata'), getJson('/api/streaming-demand'), getJson('/api/streaming-status'), getJson('/api/ml-results')
     ]);
     document.getElementById('status-dot').style.background = health.mongodb ? '#58d5a4' : '#f07c60';
     document.getElementById('status-text').textContent = health.mongodb ? 'MongoDB connected' : 'MongoDB unavailable';
@@ -84,7 +94,7 @@ async function loadDashboard() {
     document.getElementById('average-distance').textContent = `${Number(overview.average_distance).toFixed(2)} mi`;
     document.getElementById('data-window').textContent = `${overview.data_start} — ${overview.data_end}`;
     document.getElementById('metadata').textContent = `${metadata.source} · ${metadata.engine} · ${metadata.cleaned_records ? number(metadata.cleaned_records) : '—'} records processed · ${metadata.processed_at || ''}`;
-    drawHourly(hourly); drawZones(zones); drawRoutes(routes); drawMap(zones); drawStreaming(streaming, streamStatus);
+    drawHourly(hourly); drawZones(zones); drawRoutes(routes); drawMap(zones); drawStreaming(streaming, streamStatus); drawMl(mlResults);
   } catch (error) {
     document.getElementById('status-dot').style.background = '#f07c60';
     document.getElementById('status-text').textContent = 'Run the demo seed first';

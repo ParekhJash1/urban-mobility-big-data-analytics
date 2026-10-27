@@ -38,6 +38,12 @@ h3 { margin: 0; font-size: 18px; letter-spacing: -.03em; }
 .stream-metrics strong { font-size: 28px; letter-spacing: -.06em; color: var(--orange); }
 .stream-metrics span { color: var(--muted); font: 10px 'DM Mono', monospace; }
 .small-chart { height: 150px; margin-top: 20px; }
+.ml-grid { display: grid; grid-template-columns: 1fr 1.45fr; gap: 16px; margin-top: 16px; }
+.ml-panel { min-height: 230px; }
+.ml-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 28px 0 23px; }
+.ml-metrics div { background: #fff4ee; border: 1px solid #f7d4c3; padding: 12px; }
+.ml-metrics strong { display: block; color: var(--orange); font-size: 22px; letter-spacing: -.05em; }
+.ml-metrics span { color: var(--muted); font: 9px 'DM Mono', monospace; }
 .route-panel { margin-top: 16px; }
 .table-scroll { overflow-x: auto; margin-top: 18px; }
 table { border-collapse: collapse; width: 100%; font-size: 13px; }
@@ -50,4 +56,5 @@ td { padding: 15px 13px; border-bottom: 1px solid #edf1f2; } td:first-child { co
 footer { border-top: 1px solid var(--line); padding: 24px 6vw; color: #8b999e; text-align: center; font-size: 11px; }
 @media (max-width: 800px) { .hero-inner { display: block; }.status-pill { display: inline-block; margin-top: 28px; }.kpi-grid { grid-template-columns: repeat(2, 1fr); }.chart-grid { grid-template-columns: 1fr; }.container { padding-top: 38px; } }
 @media (max-width: 800px) { .stream-grid { grid-template-columns: 1fr; }.zone-map { height: 330px; } }
+@media (max-width: 800px) { .ml-grid { grid-template-columns: 1fr; } }
 @media (max-width: 460px) { .kpi-grid { grid-template-columns: 1fr; }.section-heading { display: block; }.data-window { margin-top: 12px; }.pipeline { gap: 7px; } }

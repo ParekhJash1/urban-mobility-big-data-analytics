@@ -71,6 +71,18 @@
         </article>
       </section>
 
+      <section class="ml-grid">
+        <article class="panel ml-panel">
+          <div class="panel-heading"><div><p class="eyebrow dark">PREDICTIVE ANALYTICS</p><h3>Fare prediction with Spark ML</h3></div><span class="panel-tag" id="ml-model">Loading model</span></div>
+          <div class="ml-metrics"><div><strong id="ml-r2">—</strong><span>R² score</span></div><div><strong id="ml-rmse">—</strong><span>RMSE ($)</span></div><div><strong id="ml-mae">—</strong><span>MAE ($)</span></div></div>
+          <p class="method-copy" id="ml-summary">The model predicts fare amount from distance, duration, time, passenger count, and pickup/drop-off zones.</p>
+        </article>
+        <article class="panel ml-panel">
+          <div class="panel-heading"><div><p class="eyebrow dark">MODEL CHECK</p><h3>Actual vs predicted fares</h3></div><span class="panel-tag">Sample predictions</span></div>
+          <div class="table-scroll"><table><thead><tr><th>Distance</th><th>Duration</th><th>Actual</th><th>Predicted</th></tr></thead><tbody id="predictions-body"><tr><td colspan="4">Loading model predictions…</td></tr></tbody></table></div>
+        </article>
+      </section>
+
       <section class="methodology">
         <div><p class="eyebrow dark">PIPELINE STATUS</p><h2>From raw data to insight</h2></div>
         <div class="pipeline"><span>NYC TLC Parquet</span><b>→</b><span class="active-step">Apache Spark ETL</span><b>→</b><span>MongoDB</span><b>→</b><span>FastAPI</span><b>→</b><span>Dashboard</span><span class="active-step">＋ Structured Streaming</span></div>

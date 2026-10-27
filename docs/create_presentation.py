@@ -435,11 +435,11 @@ def build_presentation():
     # 13. Implemented extensions and roadmap
     slide = prs.slides.add_slide(blank)
     base(slide, 13)
-    title(slide, "12 · extensions", "What was implemented next", "The two capabilities shown in the roadmap are now working features in the project.")
+    title(slide, "12 · extensions", "What was implemented next", "The map, streaming, and predictive analytics capabilities are now working features in the project.")
     future = [
         ("01", "Zone names + maps", "Implemented with official TLC lookup data, GeoJSON, and Leaflet."),
         ("02", "Structured streaming", "Implemented with Spark Structured Streaming and MongoDB live aggregates."),
-        ("03", "Spark ML", "Next roadmap item: predict fare or trip duration from trip features."),
+        ("03", "Spark ML", "Implemented with linear regression, model metrics, and sample predictions."),
         ("04", "More context", "Next roadmap item: add weather, holidays, events, and traffic data."),
     ]
     for i, (num, name, desc) in enumerate(future):
@@ -464,6 +464,7 @@ def build_presentation():
         "MongoDB stores reusable batch and streaming analytical collections.",
         "FastAPI exposes the results through a clean REST interface.",
         "The dashboard makes demand, revenue, zones, routes, and live events easy to explain.",
+        "Spark ML provides a fare prediction model with RMSE, MAE, and R² metrics.",
     ], 1.15, 2.55, 10.7, 1.75, 16, WHITE, 0.42)
     text(slide, "Thank you", 0.75, 5.42, 4.0, 0.55, 34, MINT, True, "Aptos Display")
     text(slide, "Questions?", 0.78, 6.1, 2.0, 0.25, 14, RGBColor(181, 201, 205))
@@ -482,6 +483,7 @@ def build_presentation():
         "backend/static/ — dashboard frontend",
         "scripts/download_zone_data.py — named zones + map",
         "scripts/stream_demand.py — live Spark stream",
+        "ml_results collection — fare prediction metrics",
         "docs/project_report.md — written report",
     ], 7.45, 2.78, 4.5, 2.05, 11, INK, 0.37)
     text(slide, "Dashboard: http://127.0.0.1:8000", 0.78, 5.95, 5.4, 0.24, 13, TEAL, True, "Courier New")

@@ -76,6 +76,12 @@ def streaming_status() -> dict:
     return documents[0] if documents else {"status": "waiting", "events_processed": 0}
 
 
+@app.get("/api/ml-results")
+def ml_results() -> dict:
+    documents = collection_documents("ml_results")
+    return documents[0] if documents else {"status": "not-trained", "message": "Run spark_analyze.py to train the model."}
+
+
 @app.get("/api/metadata")
 def metadata() -> dict:
     documents = collection_documents("metadata")

@@ -5,6 +5,9 @@ from datetime import datetime, timezone
 
 from dotenv import load_dotenv
 from pymongo import MongoClient
+from pyspark.ml.evaluation import RegressionEvaluator
+from pyspark.ml.feature import VectorAssembler
+from pyspark.ml.regression import LinearRegression
 from pyspark.sql import SparkSession, functions as F
 
 load_dotenv()
@@ -21,6 +24,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Run distributed taxi analytics with Apache Spark")
     parser.add_argument("--input", required=True, help="Parquet file, directory, or glob")
     parser.add_argument("--zone-lookup", default="data/zones/taxi_zone_lookup.csv", help="Official TLC zone lookup CSV")
+    parser.add_argument("--ml-sample", type=int, default=150000, help="Maximum records used to train the fare model")
     args = parser.parse_args()
 
     input_path = args.input
@@ -177,12 +181,61 @@ def main() -> None:
             .collect()
         ]
 
+        # Spark ML fare prediction. A bounded sample keeps local demonstrations fast.
+        ml_columns = ["trip_distance", "duration_minutes", "pickup_hour", "passenger_count", "pickup_zone", "dropoff_zone"]
+        ml_data = (
+            trips.select(*ml_columns, F.col("fare_amount").alias("label"))
+            .dropna()
+            .filter(
+                (F.col("label") >= 1)
+                & (F.col("label") <= 100)
+                & (F.col("trip_distance") >= 0.1)
+                & (F.col("duration_minutes") >= 1)
+            )
+        )
+        if args.ml_sample > 0:
+            sample_fraction = min(1.0, max(args.ml_sample / max(total_trips, 1) * 1.25, 0.01))
+            ml_data = ml_data.sample(False, sample_fraction, seed=42).limit(args.ml_sample)
+        training, testing = ml_data.randomSplit([0.8, 0.2], seed=42)
+        assembler = VectorAssembler(inputCols=ml_columns, outputCol="features")
+        regression = LinearRegression(featuresCol="features", labelCol="label", predictionCol="prediction", maxIter=20)
+        model = regression.fit(assembler.transform(training))
+        prediction_rows = model.transform(assembler.transform(testing)).cache()
+        rmse = RegressionEvaluator(labelCol="label", predictionCol="prediction", metricName="rmse").evaluate(prediction_rows)
+        r2 = RegressionEvaluator(labelCol="label", predictionCol="prediction", metricName="r2").evaluate(prediction_rows)
+        mae = RegressionEvaluator(labelCol="label", predictionCol="prediction", metricName="mae").evaluate(prediction_rows)
+        ml_predictions = [
+            {
+                "actual_fare": round(float(row["label"]), 2),
+                "predicted_fare": round(float(row["prediction"]), 2),
+                "distance": round(float(row["trip_distance"]), 2),
+                "duration": round(float(row["duration_minutes"]), 2),
+            }
+            for row in prediction_rows.select("label", "prediction", "trip_distance", "duration_minutes").orderBy(F.rand(seed=7)).limit(12).collect()
+        ]
+        ml_results = [{
+            "model": "Spark ML Linear Regression",
+            "target": "fare_amount",
+            "features": ml_columns,
+            "training_records": training.count(),
+            "testing_records": testing.count(),
+            "rmse": round(float(rmse), 3),
+            "mae": round(float(mae), 3),
+            "r2": round(float(r2), 3),
+            "coefficients": [
+                {"feature": feature, "coefficient": round(float(coefficient), 4)}
+                for feature, coefficient in zip(ml_columns, model.coefficients)
+            ],
+            "predictions": ml_predictions,
+        }]
+
         client = MongoClient(os.getenv("MONGODB_URI", "mongodb://localhost:27017"))
         database = client[os.getenv("MONGODB_DATABASE", "taxi_analytics")]
         replace_collection(database, "overview", [overview])
         replace_collection(database, "hourly_demand", hourly)
         replace_collection(database, "top_routes", routes)
         replace_collection(database, "zone_performance", zones)
+        replace_collection(database, "ml_results", ml_results)
         replace_collection(database, "metadata", [{
             "source": "NYC TLC Yellow Taxi Trip Records",
             "processed_at": datetime.now(timezone.utc).isoformat(),

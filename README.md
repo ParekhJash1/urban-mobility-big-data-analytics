@@ -30,7 +30,7 @@ big-data-taxi-analytics/
 │   ├── download_data.py      # Downloads a public TLC data month
 │   ├── download_zone_data.py # Downloads named zones and GeoJSON boundaries
 │   ├── seed_demo.py          # Creates immediate demo data in MongoDB
-│   ├── spark_analyze.py      # Spark ETL, aggregations, and MongoDB loading
+│   ├── spark_analyze.py      # Spark ETL, ML fare model, and MongoDB loading
 │   ├── stream_demand.py      # Spark Structured Streaming consumer
 │   └── stream_producer.py    # Local live-event producer for the demo
 ├── docker-compose.yml
@@ -157,6 +157,7 @@ For a larger demonstration, download several months and compare the Spark execut
 | GET | `/api/zone-map` | Named zone metrics for the map |
 | GET | `/api/streaming-demand` | Live demand aggregates |
 | GET | `/api/streaming-status` | Live processing status |
+| GET | `/api/ml-results` | Spark ML metrics and predictions |
 
 ## Suggested presentation storyline
 
