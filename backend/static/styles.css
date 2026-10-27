@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root { --ink: #10202c; --muted: #64737d; --line: #dce5e8; --paper: #f5f8f7; --blue: #2d75e6; --orange: #f07844; --green: #18a878; --purple: #8765dc; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: Manrope, sans-serif; }
+.hero { background: #102b3a; color: white; padding: 54px 6vw 62px; position: relative; overflow: hidden; }
+.hero:after { content: ''; position: absolute; width: 430px; height: 430px; border: 1px solid rgba(255,255,255,.12); border-radius: 50%; right: 8%; top: -230px; box-shadow: 0 0 0 40px rgba(255,255,255,.025), 0 0 0 80px rgba(255,255,255,.025); }
+.hero-inner { max-width: 1220px; margin: auto; display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; position: relative; z-index: 1; }
+.eyebrow { color: #8ad7cf; font: 500 11px 'DM Mono', monospace; letter-spacing: .15em; margin: 0 0 15px; }
+.eyebrow.dark { color: #198e88; }
+h1 { font-size: clamp(36px, 5vw, 66px); letter-spacing: -.055em; line-height: .98; margin: 0; font-weight: 800; }
+h1 span { color: #8ad7cf; }
+.hero-copy { color: #b5c9cd; margin: 24px 0 0; font-size: 15px; }
+.status-pill { border: 1px solid rgba(255,255,255,.2); border-radius: 30px; padding: 11px 15px; color: #d9e8e9; font-size: 12px; white-space: nowrap; }
+#status-dot { display: inline-block; height: 8px; width: 8px; background: #f3bb60; border-radius: 50%; margin-right: 8px; }
+.container { max-width: 1220px; margin: auto; padding: 60px 6vw; }
+.section-heading, .panel-heading { display: flex; justify-content: space-between; align-items: end; gap: 20px; }
+h2 { font-size: 26px; letter-spacing: -.04em; margin: 0; }
+h3 { margin: 0; font-size: 18px; letter-spacing: -.03em; }
+.data-window, .panel-tag { color: var(--muted); font: 11px 'DM Mono', monospace; }
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 28px 0 42px; }
+.kpi-card { background: white; border: 1px solid var(--line); border-top: 3px solid; padding: 22px 23px 20px; box-shadow: 0 4px 14px rgba(16,43,58,.035); }
+.kpi-card p { color: var(--muted); margin: 0 0 12px; font-size: 13px; }
+.kpi-card strong { display: block; font-size: 30px; letter-spacing: -.06em; }
+.kpi-card span { color: #91a0a5; font: 10px 'DM Mono', monospace; }
+.accent-blue { border-color: var(--blue); }.accent-orange { border-color: var(--orange); }.accent-green { border-color: var(--green); }.accent-purple { border-color: var(--purple); }
+.chart-grid { display: grid; grid-template-columns: 1.45fr 1fr; gap: 16px; }
+.panel { background: white; border: 1px solid var(--line); padding: 25px; box-shadow: 0 4px 14px rgba(16,43,58,.035); }
+.chart-wrap { height: 285px; margin-top: 25px; position: relative; }
+.route-panel { margin-top: 16px; }
+.table-scroll { overflow-x: auto; margin-top: 18px; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { text-align: left; color: #86969b; font: 10px 'DM Mono', monospace; letter-spacing: .08em; text-transform: uppercase; padding: 11px 13px; border-bottom: 1px solid var(--line); }
+td { padding: 15px 13px; border-bottom: 1px solid #edf1f2; } td:first-child { color: #8999a0; font-family: 'DM Mono', monospace; }
+.methodology { margin-top: 54px; padding: 32px; background: #dff1ed; border: 1px solid #bee5dd; }
+.pipeline { display: flex; flex-wrap: wrap; align-items: center; gap: 13px; margin: 25px 0 18px; font: 11px 'DM Mono', monospace; color: #27675f; }
+.pipeline span { background: rgba(255,255,255,.75); padding: 10px 12px; border: 1px solid #bfdfd9; }.pipeline .active-step { background: #197c73; color: white; border-color: #197c73; }.pipeline b { color: #6da79f; }
+.method-copy { color: #53736f; font-size: 12px; margin: 0; }
+footer { border-top: 1px solid var(--line); padding: 24px 6vw; color: #8b999e; text-align: center; font-size: 11px; }
+@media (max-width: 800px) { .hero-inner { display: block; }.status-pill { display: inline-block; margin-top: 28px; }.kpi-grid { grid-template-columns: repeat(2, 1fr); }.chart-grid { grid-template-columns: 1fr; }.container { padding-top: 38px; } }
+@media (max-width: 460px) { .kpi-grid { grid-template-columns: 1fr; }.section-heading { display: block; }.data-window { margin-top: 12px; }.pipeline { gap: 7px; } }

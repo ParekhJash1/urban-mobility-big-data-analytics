@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Urban Mobility Analytics</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero-inner">
+        <div>
+          <p class="eyebrow">BIG DATA ANALYTICS · SPARK + MONGODB</p>
+          <h1>Urban Mobility<br /><span>Analytics Dashboard</span></h1>
+          <p class="hero-copy">Discover how taxi demand, revenue, and routes change across the city.</p>
+        </div>
+        <div class="status-pill"><span id="status-dot"></span><span id="status-text">Connecting to MongoDB…</span></div>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="section-heading">
+        <div>
+          <p class="eyebrow dark">EXECUTIVE OVERVIEW</p>
+          <h2>What is happening in the network?</h2>
+        </div>
+        <p class="data-window" id="data-window">Loading processed data…</p>
+      </section>
+
+      <section class="kpi-grid">
+        <article class="kpi-card accent-blue"><p>Total trips</p><strong id="total-trips">—</strong><span>cleaned records</span></article>
+        <article class="kpi-card accent-orange"><p>Total revenue</p><strong id="total-revenue">—</strong><span>estimated trip revenue</span></article>
+        <article class="kpi-card accent-green"><p>Average fare</p><strong id="average-fare">—</strong><span>per completed trip</span></article>
+        <article class="kpi-card accent-purple"><p>Average distance</p><strong id="average-distance">—</strong><span>miles per trip</span></article>
+      </section>
+
+      <section class="chart-grid">
+        <article class="panel large-panel">
+          <div class="panel-heading"><div><p class="eyebrow dark">DEMAND PATTERN</p><h3>Trips by pickup hour</h3></div><span class="panel-tag">24-hour view</span></div>
+          <div class="chart-wrap"><canvas id="hourly-chart"></canvas></div>
+        </article>
+        <article class="panel">
+          <div class="panel-heading"><div><p class="eyebrow dark">LOCATION ANALYSIS</p><h3>Busiest pickup zones</h3></div></div>
+          <div class="chart-wrap"><canvas id="zone-chart"></canvas></div>
+        </article>
+      </section>
+
+      <section class="panel route-panel">
+        <div class="panel-heading"><div><p class="eyebrow dark">ROUTE ANALYSIS</p><h3>Most frequent routes</h3></div><span class="panel-tag">Pickup → drop-off</span></div>
+        <div class="table-scroll"><table><thead><tr><th>Rank</th><th>Pickup zone</th><th>Drop-off zone</th><th>Trips</th><th>Average fare</th></tr></thead><tbody id="routes-body"><tr><td colspan="5">Loading route results…</td></tr></tbody></table></div>
+      </section>
+
+      <section class="methodology">
+        <div><p class="eyebrow dark">PIPELINE STATUS</p><h2>From raw data to insight</h2></div>
+        <div class="pipeline"><span>NYC TLC Parquet</span><b>→</b><span class="active-step">Apache Spark ETL</span><b>→</b><span>MongoDB</span><b>→</b><span>FastAPI</span><b>→</b><span>Dashboard</span></div>
+        <p class="method-copy" id="metadata">Analytics metadata will appear here after the pipeline runs.</p>
+      </section>
+    </main>
+    <footer>Urban Mobility Big Data Analytics · University project demonstration</footer>
+    <script src="/static/app.js"></script>
+  </body>
+</html>
